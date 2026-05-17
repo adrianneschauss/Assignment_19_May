@@ -87,7 +87,42 @@ class SimpleFNN(nn.Module):
 model = SimpleFNN()
 
 criterion = nn.CrossEntropyLoss()
-optimizer = optim.Adam(model.parameters(), lr=0.01)
+optimizers = []
+lrs= [0.001,0.005,0.01,0.02,0.05]
+fig, axs = plt.subplots(3, 3)
+axs[0, 0].set_title('Axis [0, 0]')
+axs[0, 1].plot(x, y, 'tab:orange')
+axs[0, 1].set_title('Axis [0, 1]')
+axs[1, 0].plot(x, -y, 'tab:green')
+axs[1, 0].set_title('Axis [1, 0]')
+axs[1, 1].plot(x, -y, 'tab:red')
+axs[1, 1].set_title('Axis [1, 1]')
+
+
+
+#define different learning rates 
+for i in lrs:
+    optimizer = optim.Adam(model.parameters(), lr=i)
+    optimizers.append(optimizer)
+    
+#train for said learning rates 
+
+for i in range(0, len(lrs)-1, 1 ):
+    epochs =[] 
+    losses = [] 
+    optimizer = optimizers[i]
+    for epoch in range(100):
+        outputs = model(X_train)
+        epochs.append(epoch)
+        loss = criterion(outputs, y_train)
+        losses.append(loss.detach().numpy())
+        optimizer.zero_grad()
+        loss.backward()
+        optimizer.step()
+    
+    
+
+
 
 epochs = []
 losses = []
