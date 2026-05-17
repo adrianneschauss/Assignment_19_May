@@ -88,15 +88,9 @@ model = SimpleFNN()
 
 criterion = nn.CrossEntropyLoss()
 optimizers = []
-lrs= [0.001,0.005,0.01,0.02,0.05]
-fig, axs = plt.subplots(3, 3)
-axs[0, 0].set_title('Axis [0, 0]')
-axs[0, 1].plot(x, y, 'tab:orange')
-axs[0, 1].set_title('Axis [0, 1]')
-axs[1, 0].plot(x, -y, 'tab:green')
-axs[1, 0].set_title('Axis [1, 0]')
-axs[1, 1].plot(x, -y, 'tab:red')
-axs[1, 1].set_title('Axis [1, 1]')
+lrs= [0.001,0.005,0.01,0.02]
+colors = ["blue", "orange", "green", "purple"]
+fig, axs = plt.subplots(4, 1)
 
 
 
@@ -104,10 +98,10 @@ axs[1, 1].set_title('Axis [1, 1]')
 for i in lrs:
     optimizer = optim.Adam(model.parameters(), lr=i)
     optimizers.append(optimizer)
-    
+
 #train for said learning rates 
 
-for i in range(0, len(lrs)-1, 1 ):
+for i in range(0, len(lrs), 1 ):
     epochs =[] 
     losses = [] 
     optimizer = optimizers[i]
@@ -115,49 +109,32 @@ for i in range(0, len(lrs)-1, 1 ):
         outputs = model(X_train)
         epochs.append(epoch)
         loss = criterion(outputs, y_train)
-        losses.append(loss.detach().numpy())
+        losses.append(loss.item())
         optimizer.zero_grad()
         loss.backward()
         optimizer.step()
-    
-    
-
-
-
-epochs = []
-losses = []
-# 7. Training loop
-for epoch in range(100):
-    outputs = model(X_train)
-    epochs.append(epoch)
-    loss = criterion(outputs, y_train)
-    losses.append(loss.detach().numpy())
-    optimizer.zero_grad()
-    loss.backward()
-    optimizer.step()
-
-    if epoch % 10 == 0:
-        print(f"Epoch {epoch}, Loss: {loss.item():.4f}")
-
-plt.plot(epochs, losses)
-plt.title("Loss over Epochs")
-plt.xlabel("Epoch (n)")
-plt.ylabel("Loss value (cross entropy)")
+    print(epochs, losses)
+    axs[i].plot(epochs, losses, color=f"tab:{colors[i]}")
+    axs[i].set_title(rf"Learning Rate: {lrs[i]}")
+fig.supxlabel("Epochs")
+fig.supylabel("Loss")
+plt.tight_layout()
 plt.show()
-with torch.no_grad():
-    predictions = model(X_test)
-    predicted_classes = torch.argmax(predictions, dim=1)
-    accuracy = (predicted_classes == y_test).float().mean()
 
-print(f"Test Accuracy: {accuracy:.2f}")
+# with torch.no_grad():
+#     predictions = model(X_test)
+#     predicted_classes = torch.argmax(predictions, dim=1)
+#     accuracy = (predicted_classes == y_test).float().mean()
 
-with torch.no_grad():
-    outputs = model(X_test)
-    predicted_classes = torch.argmax(outputs, dim=1)
+# print(f"Test Accuracy: {accuracy:.2f}")
+
+# with torch.no_grad():
+#     outputs = model(X_test)
+#     predicted_classes = torch.argmax(outputs, dim=1)
 
  
-y_true = y_test.numpy()
-y_pred = predicted_classes.numpy()
+# y_true = y_test.numpy()
+# y_pred = predicted_classes.numpy()
 
-# Print precision, recall, f1-score for each class
-print(classification_report(y_true, y_pred, labels = [0,1], target_names=["Bad, Good"]))
+# # Print precision, recall, f1-score for each class
+# print(classification_report(y_true, y_pred, labels = [0,1], target_names=["Bad, Good"]))
