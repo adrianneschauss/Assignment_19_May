@@ -30,7 +30,7 @@ selected_columns = numeric_features.columns[selector.get_support()]
 X = pd.DataFrame(selected_array, columns=selected_columns, index=ions_df.index)
 y = ions_df[TARGET_COLUMN]
 
-# 2. Train/test split
+
 X_train, X_test, y_train, y_test = train_test_split(
     X, y, test_size=0.8, random_state=42
 )
@@ -39,7 +39,7 @@ print(y_test.to_frame())
 print(X_test)
 print(type(X_train), type(X_test), type(y_test.to_frame()), type(y_train.to_frame()))
 
-# 3. Normalize features
+
 scaler = StandardScaler()
 X_train = scaler.fit_transform(X_train)
 X_test = scaler.transform(X_test)
@@ -58,7 +58,8 @@ for j in y_test:
     else:
         hot_encoded_test.append(1)
 
-# 4. Convert to tensors
+
+
 X_train = torch.tensor(X_train, dtype=torch.float32)
 y_train = torch.tensor(np.array(hot_encoded_train), dtype=torch.long)
 
@@ -85,7 +86,7 @@ class SimpleFNN(nn.Module):
 
 model = SimpleFNN()
 
-# 6. Loss and optimizer
+
 criterion = nn.CrossEntropyLoss()
 optimizer = optim.Adam(model.parameters(), lr=0.01)
 
@@ -101,7 +102,7 @@ for epoch in range(100):
     if epoch % 10 == 0:
         print(f"Epoch {epoch}, Loss: {loss.item():.4f}")
 
-# 8. Evaluation
+
 with torch.no_grad():
     predictions = model(X_test)
     predicted_classes = torch.argmax(predictions, dim=1)
@@ -118,4 +119,4 @@ y_true = y_test.numpy()
 y_pred = predicted_classes.numpy()
 
 # Print precision, recall, f1-score for each class
-print(classification_report(y_true, y_pred, target_labels = ['g', 'b'], target_names=["Good", "Bad"]))
+print(classification_report(y_true, y_pred, target_names=["Good", "Bad"]))
